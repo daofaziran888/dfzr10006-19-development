@@ -5,7 +5,8 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query
 
-from app.schemas import ActionResult, EntryPayload, PageResult
+from app.contracts import ContractFormatError, contract_repository
+from app.schemas import ActionResult, ContractImportPayload, EntryPayload, PageResult
 from app.services.schema import SchemaService
 
 router = APIRouter(prefix="/api/schema", tags=["数据接口契约"])
@@ -28,6 +29,44 @@ def list_entries(
         raise HTTPException(status_code=400, detail="每页最多 200 条，请缩小分页范围")
     items, total = service.list_entries(keyword=keyword, status=status, page=page, size=size)
     return PageResult(items=items, total=total, page=page, size=size)
+
+
+@router.post("/contracts/import")
+def import_contract(payload: ContractImportPayload) -> dict[str, Any]:
+    """导入契约版本并逐字段比较兼容性。
+
+    - 首次导入某接口：生成请求参数与响应字段快照，不产生变更明细；
+    - 再次导入：逐字段比较新增请求参数、删除响应字段、类型变化与顺序调整；
+    - 相同契约指纹重复上传：直接返回历史批次，只保留原批次报告的变化字段；
+    - 文件格式错误：返回 400 且不写入任何批次、不覆盖快照，原契约保留。
+    """
+    try:
+        batch = contract_repository.import_contract(payload.content, payload.filename)
+    except ContractFormatError as exc:
+        raise HTTPException(status_code=400, detail={
+            "message": str(exc),
+            "契约保留": True,
+            "说明": "文件格式错误，本次导入已拒绝，既有契约批次与字段快照均未改动",
+        }) from exc
+    return {"ok": True, "batch": batch}
+
+
+@router.get("/contracts")
+def list_contract_batches(
+    interface_code: str | None = Query(default=None, description="按接口编号过滤批次，如 SCHE-0002"),
+) -> dict[str, Any]:
+    """查询契约比较批次；可按接口编号收敛到同一接口的全部版本结论。"""
+    batches = contract_repository.list_batches(interface_code)
+    return {"total": len(batches), "items": batches}
+
+
+@router.get("/contracts/{batch_id}")
+def get_contract_batch(batch_id: int) -> dict[str, Any]:
+    """读取单个契约批次的完整比较结论与字段快照。"""
+    batch = contract_repository.get_batch(batch_id)
+    if batch is None:
+        raise HTTPException(status_code=404, detail=f"契约批次 {batch_id} 不存在")
+    return batch
 
 
 @router.get("/{entry_id}", response_model=dict)

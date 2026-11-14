@@ -28,6 +28,13 @@ class EntryPayload(BaseModel):
     remark: str | None = None
 
 
+class ContractImportPayload(BaseModel):
+    """契约版本导入：内容为契约文件原文，文件名仅用于格式错误时定位来源。"""
+
+    content: str
+    filename: str | None = None
+
+
 
 class RegistryEntry(BaseModel):
     """服务实例明细结构。"""

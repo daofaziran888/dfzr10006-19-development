@@ -30,6 +30,24 @@ def list_entries(
     return PageResult(items=items, total=total, page=page, size=size)
 
 
+@router.get("/compatibility")
+def get_compatibility(
+    interface_code: str = Query(description="接口编号，如 SCHE-0002，读取契约模块的同一兼容性结论"),
+) -> dict[str, Any]:
+    """调用来源按接口编号查询契约兼容性，结论与数据接口契约模块完全同源。"""
+    code = interface_code.strip()
+    if not code:
+        raise HTTPException(status_code=400, detail="接口编号不能为空")
+    batch = service.interface_compatibility(code)
+    if batch is None:
+        return {
+            "接口编号": code,
+            "有结论": False,
+            "message": f"接口 {code} 尚未导入过契约版本，暂无兼容性结论",
+        }
+    return {"接口编号": code, "有结论": True, "batch": batch}
+
+
 @router.get("/{entry_id}", response_model=dict)
 def get_entry(entry_id: int) -> dict:
     """读取单条来源登记明细；不存在时给出可读的错误说明。"""

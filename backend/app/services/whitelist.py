@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from app.contracts import contract_repository
 from app.store import store
 
 MODULE = "whitelist"
@@ -59,3 +60,11 @@ class WhitelistService:
         entry["pending"] = target != STATUS_ORDER[-1]
         entry["abnormal"] = action in NEGATIVE_ACTIONS
         return entry, f"来源登记已{action}"
+
+    def interface_compatibility(self, interface_code: str) -> dict[str, Any] | None:
+        """按接口编号读取数据接口契约模块产出的同一份兼容性结论。
+
+        调用来源不自己做比较，只消费契约仓库里该接口的最新批次，
+        保证「来源侧看到的结论」与「契约导入侧的结论」始终一致。
+        """
+        return contract_repository.latest_compatibility(interface_code)

@@ -33,3 +33,22 @@ body { margin: 0; background: #f6f8fb; color: #1f2937; }
 .link { border: none; background: none; color: var(--brand); cursor: pointer; padding: 0; }
 .page-foot { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--muted); }
 .error-text { color: #b42318; }
+.success-text { color: #067647; }
+.panel { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.panel-title { font-size: 14px; font-weight: 600; margin: 0; }
+.panel-hint { color: var(--muted); font-size: 12px; margin: 4px 0 10px; }
+.contract-textarea { width: 100%; min-height: 150px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; resize: vertical; }
+.form-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+.inline-input { border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; font-size: 13px; }
+.badge { display: inline-block; border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.badge.compatible { background: #ecfdf3; color: #067647; border: 1px solid #abefc6; }
+.badge.incompatible { background: #fef3f2; color: #b42318; border: 1px solid #fecdca; }
+.badge.undecidable { background: #fffaeb; color: #b54708; border: 1px solid #fedf89; }
+.badge.neutral { background: #f2f4f7; color: #475467; border: 1px solid var(--border); }
+.change-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.change-table th, .change-table td { border: 1px solid var(--border); padding: 6px 8px; font-size: 12px; text-align: left; }
+.change-table th { background: #f8fafc; }
+.kind-tag { font-size: 12px; color: #344054; background: #f2f4f7; border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
+.fingerprint { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: var(--muted); }
+.batch-meta { color: var(--muted); font-size: 12px; display: flex; gap: 14px; flex-wrap: wrap; }
